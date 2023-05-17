@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      # Prevents large files from being committed. Default is args: ['--maxkb=500']
+      - id: check-added-large-files
+      # Check for files with names that would conflict on a case-insensitive filesystem
+      - id: check-case-conflict
+      # Check for files that contain merge conflict strings.
+      - id: check-merge-conflict
+      # Removes UTF-8 byte order marker
+      - id: fix-byte-order-marker
+      # Makes sure files end in a newline and only a newline.
+      - id: end-of-file-fixer
+      # Replaces or checks mixed line ending.
+      - id: mixed-line-ending
+      # Trims trailing whitespace.
+      - id: trailing-whitespace
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v1.0
+    hooks:
+      - id: fmt
+        args: ["--verbose", "--check", "--"]

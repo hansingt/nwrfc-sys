@@ -1,0 +1,11 @@
+/target
+Cargo.lock
+
+# SAP Netweaver files
+dev_rfc.log
+
+# Generated bindings
+/src/bindings.rs
+
+# JetBrains IDE
+/.idea/
