@@ -1,0 +1,2 @@
+[env]
+SAPNWRFC_HOME = {value = "nwrfcsdk", relative = true}

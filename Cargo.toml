@@ -1,14 +1,14 @@
 [package]
 name = "sapnwrfc-sys"
-version = "7.50.11-0.1.0"
-description = "Low level Rust bindings for the SAP NetWeaver RFC Libs"
+version = "0.1.0"
+description = "Unsafe Rust bindings for the SAP NetWeaver RFC Libs"
 authors = ["Torben Hansing <torben.hansing@contact-software.com>"]
 edition = "2021"
 links = "sapnwrfc"
 build = "build.rs"
 
 [lib]
-crate-type = ["lib"]
+crate-type = ["cdylib"]
 doctest = false
 bench = false
 

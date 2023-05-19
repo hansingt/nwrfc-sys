@@ -55,32 +55,14 @@ mod config {
     ];
 }
 
-const ALLOWED_TYPES: [&str; 24] = [
-    "SAP_UC",
-    "SAP_RAW",
-    "RFC_CHAR",
-    "RFC_NUM",
-    "RFC_BYTE",
-    "RFC_BCD",
-    "RFC_INT1",
-    "RFC_INT2",
-    "RFC_INT",
-    "RFC_FLOAT",
-    "RFC_DATE",
-    "RFC_TIME",
-    "RFC_DECF16",
-    "RFC_DECF34",
-    "RFC_UTCLONG",
-    "RFC_UTCSECOND",
-    "RFC_UTCMINUTE",
-    "RFC_DTDAY",
-    "RFC_DTWEEK",
-    "RFC_TSECOND",
-    "RFC_TMINUTE",
-    "RFC_CDAAY",
-    "RFC_TID",
-    "RFC_UNITTID",
-];
+fn set_ld_library_path(lib_dir: PathBuf) {
+    let library_path = env::var("LD_LIBRARY_PATH").unwrap_or(String::from(""));
+    println!(
+        "cargo:rustc-env=LD_LIBRARY_PATH={}:{}",
+        lib_dir.to_string_lossy(),
+        library_path
+    );
+}
 
 fn main() {
     // Get the path to the SAP NWRFC SDK
@@ -88,12 +70,15 @@ fn main() {
         "SAPNWRFC_HOME environment variable not set! \
                     Please set it to the root directory of the SAP Netweaver RFC SDK.",
     ));
+    let lib_dir = sdk.join("lib");
 
     // Set the path to the libs
-    println!(
-        "cargo:rustc-link-search={}",
-        sdk.join("lib").to_string_lossy()
-    );
+    println!("cargo:rustc-link-search={}", lib_dir.to_string_lossy());
+
+    // On linux, we need to set the LD_LIBRARY_PATH to the sapnwrfc libs
+    // e.g. for tests
+    #[cfg(target_os = "linux")]
+    set_ld_library_path(lib_dir);
 
     // Tell cargo to link against the sapnwrfc libs
     for lib in config::LIBS {
@@ -106,7 +91,7 @@ fn main() {
     }
 
     // Add the bindgen wrapper
-    let mut bindings = bindgen::Builder::default()
+    let bindings = bindgen::Builder::default()
         // Add custom build arguments for the clang compiler
         .clang_args(config::DEFINES)
         // Build bindings for the sapnwrfc.h header
@@ -122,19 +107,10 @@ fn main() {
         .derive_ord(true)
         // Use rust enums as default
         .default_enum_style(bindgen::EnumVariation::Rust {
-            non_exhaustive: false,
+            non_exhaustive: true,
         })
-        // Allow all methods starting with Rfc to be exported
-        .allowlist_function("Rfc.*")
-        // Allow all types starting with RFC_ to be exported
-        .allowlist_type("RFC_.*")
         // Don't include the documentation as comments
-        .generate_comments(false);
-
-    // Add the types to export
-    for allowed_type in ALLOWED_TYPES {
-        bindings = bindings.allowlist_type(allowed_type);
-    }
+        .generate_comments(true);
 
     // generate the bindings
     let out_path = PathBuf::from("src");

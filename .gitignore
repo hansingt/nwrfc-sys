@@ -3,6 +3,7 @@ Cargo.lock
 
 # SAP Netweaver files
 dev_rfc.log
+/nwrfcsdk
 
 # Generated bindings
 /src/bindings.rs
