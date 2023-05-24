@@ -1,17 +1,20 @@
-# Unsafe Rust bindings for the SAP NetWeaver RFC SDK
+# Rust bindings for the SAP NetWeaver RFC SDK
 
-This crate uses [`bindgen`](https://crates.io/crates/bindgen) to generate bindings for the
-SAP NetWeaver RFC C-SDK and exports the unsafe bindings for direct usage.
+This crate uses [`bindgen`](https://crates.io/crates/bindgen) to generate bindings for
+the SAP NetWeaver RFC libraries.
 
-> **_NOTE_**: Normal developers should use the
-[`sapnwrfc`](https://github.com/hansingt/sapnwrfc-rust) crate instead, which is built upon
-this crate and implements safe wrappers for most of the functions
-and types exported by this crate.
+It consists of two layers of abstraction:
 
-This crate allows for direct interaction with SAP systems using the RFC protocol.
-It does not implement any error handling or type conversion / checking.
-Thus, all types exported by this crate are direct wrappers of the corresponding
-C structs and all functions are the direct unsafe calls to the C functions.
+1) It directly exports the wrapped, unsafe C-Functions from the NetWeaver RFC using
+   `nwrfc::_unsafe`.
+2) It implements an abstraction layer protocol under `nwrfc::protocol`, which allows
+   a more object-oriented access to the SAP NetWeaver RFC library.
+   This layer is mostly inspired by SAP's own python implementation of the
+   SAP NetWeaver RFC wrappers called [PyRFC](https://github.com/sap/pyrfc).
+
+**_NOTE:_** Normal developers should use the abstraction layer protocol any try to avoid
+the `nwrfc::_unsafe` layer. Nevertheless, this layer is exported to allow access to
+functions which have not (yet) been implemented in the abstraction layer.
 
 ## How to include
 Because of license limitations, we are not allowed to distribute this crate in
@@ -20,7 +23,7 @@ instead:
 
 ```toml
 [dependencies]
-sapnwrfc-sys = { git = "https://github.com/hansingt/sapnwrfc-sys.git" }
+nwrfc = { git = "https://github.com/hansingt/rust-nwrfc.git" }
 ```
 
 ## How to build the bindings

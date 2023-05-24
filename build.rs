@@ -3,7 +3,7 @@ extern crate bindgen;
 use std::env;
 use std::path::PathBuf;
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", target_arch = "x86_64"))]
 mod config {
     pub const DEFINES: [&str; 8] = [
         "-DNDEBUG",
@@ -55,6 +55,7 @@ mod config {
     ];
 }
 
+#[cfg(target_os = "linux")]
 fn set_ld_library_path(lib_dir: PathBuf) {
     let library_path = env::var("LD_LIBRARY_PATH").unwrap_or(String::from(""));
     println!(
@@ -109,14 +110,17 @@ fn main() {
         .default_enum_style(bindgen::EnumVariation::Rust {
             non_exhaustive: true,
         })
-        // Don't include the documentation as comments
-        .generate_comments(true);
+        // don't include the documentation as comments
+        // they currently do not compile well..
+        .generate_comments(false)
+        // Don't generate layout tests
+        .layout_tests(false);
 
     // generate the bindings
     let out_path = PathBuf::from("src");
     bindings
         .generate()
         .expect("Unable to generate library bindings")
-        .write_to_file(out_path.join("bindings.rs"))
+        .write_to_file(out_path.join("_unsafe.rs"))
         .expect("Unable to write library bindings");
 }

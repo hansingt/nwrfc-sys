@@ -1,16 +1,19 @@
 [package]
-name = "sapnwrfc-sys"
+name = "nwrfc"
 version = "0.1.0"
-description = "Unsafe Rust bindings for the SAP NetWeaver RFC Libs"
+description = "rust bindings for the SAP NetWeaver RFC Libs"
 authors = ["Torben Hansing <torben.hansing@contact-software.com>"]
 edition = "2021"
 links = "sapnwrfc"
 build = "build.rs"
 
 [lib]
-crate-type = ["rlib", "dylib"]
-doctest = false
+crate-type = ["lib"]
+doctest = true
 bench = false
 
 [build-dependencies]
-bindgen = "0.65.1"
+bindgen = "~0.65.1"
+
+[dev-dependencies]
+clap = {version = "4.3.0", features = ["derive"]}
