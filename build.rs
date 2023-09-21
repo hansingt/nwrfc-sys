@@ -105,9 +105,11 @@ fn main() {
         .derive_eq(true)
         .derive_hash(true)
         .derive_ord(true)
-        // Use rust enums as default
+        // Use rust enums as default.
+        // But make them exhaustive, as we need to re-build the wrappers for
+        // every NW RFC lib version anyway.
         .default_enum_style(bindgen::EnumVariation::Rust {
-            non_exhaustive: true,
+            non_exhaustive: false,
         })
         // Don't include the documentation as comments
         .generate_comments(true);
