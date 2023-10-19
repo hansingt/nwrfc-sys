@@ -96,6 +96,7 @@ fn main() {
         .clang_args(config::DEFINES)
         // Build bindings for the sapnwrfc.h header
         .header(sdk.join("include").join("sapnwrfc.h").to_string_lossy())
+        .header(sdk.join("include").join("sapdecf.h").to_string_lossy())
         // Tell cargo to invalidate the build results if any of the included
         // headers changes
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
