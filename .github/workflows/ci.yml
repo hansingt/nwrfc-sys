@@ -1,0 +1,56 @@
+name: Cargo Build & Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  LLVM_PROFILE_FILE: target/coverage/%p-%m.profraw
+  RUSTFLAGS: -C instrument-coverage
+
+jobs:
+  build_and_test:
+    name: nwrfc - latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+          - beta
+          - nightly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install clang
+        run: sudo apt-get update && sudo apt-get install -y llvm-dev libclang-dev clang
+      - name: Get rust toolchain
+        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - name: Install grcov & llvm-tools
+        run: rustup component add llvm-tools-preview && cargo install grcov
+      - name: Build
+        run: cargo build --verbose
+      - name: Test
+        run: cargo test --verbose
+      - name: Collect coverage data
+        run: mkdir coverage && grcov target/coverage --binary-path target/debug --source-dir . --output-path coverage --keep-only 'src/*' --output-types cobertura
+      - name: Report coverage
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/cobertura.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: true
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '70 90'
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request' && matrix.toolchain == 'stable'
+        with:
+          recreate: true
+          path: code-coverage-results.md
