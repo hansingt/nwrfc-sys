@@ -1,5 +1,5 @@
 [package]
-name = "sapnwrfc-sys"
+name = "nwrfc-sys"
 version = "0.1.0"
 description = "Unsafe Rust bindings for the SAP NetWeaver RFC Libs"
 authors = ["Torben Hansing <torben.hansing@contact-software.com>"]
