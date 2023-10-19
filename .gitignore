@@ -8,5 +8,8 @@ dev_rfc.log
 # Generated bindings
 /src/bindings.rs
 
+# Coverage reports
+/coverage/
+
 # JetBrains IDE
 /.idea/
