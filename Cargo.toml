@@ -13,4 +13,4 @@ doctest = false
 bench = false
 
 [build-dependencies]
-bindgen = "~0"
+bindgen = "0.68.1"

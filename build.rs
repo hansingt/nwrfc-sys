@@ -3,20 +3,51 @@ extern crate bindgen;
 use std::env;
 use std::path::PathBuf;
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "windows", target_arch = "x86"))]
 mod config {
-    pub const DEFINES: [&str; 8] = [
+    pub const DEFINES: [&str; 15] = [
+        "-DSAPonNT",
+        "-D_CRT_NON_CONFORMING_SWPRINTFS",
+        "-D_CRT_SECURE_NO_DEPRECATE",
+        "-D_CRT_NONSTDC_NO_DEPRECATE",
+        "-D_AFXDLL",
+        "-DWIN32",
+        "-D_WIN32_WINNT=0x0502",
+        "-D_X86_",
+        "-DBCDASM",
         "-DNDEBUG",
-        "-D_LARGEFILE_SOURCE",
-        "-D_CONSOLE",
-        "-D_FILE_OFFSET_BITS=64",
-        "-DSAPonUNIX",
         "-DSAPwithUNICODE",
+        "-DUNICODE",
+        "-D_UNICODE",
         "-DSAPwithTHREADS",
-        "-DSAPonLIN",
+        "-D_ATL_ALLOW_CHAR_UNSIGNED",
     ];
-    pub const LIBS: [&str; 2] = ["sapnwrfc", "sapucum"];
-    pub const LINK_ARGS: [&str; 0] = [];
+    pub const LIBS: [&str; 13] = [
+        "ole32.lib",
+        "oleauth32.lib",
+        "uuid.lib",
+        "kernel32.lib",
+        "advapi32.lib",
+        "user32.lib",
+        "gdi32.lib",
+        "winspool.lib",
+        "ws2_32.lib",
+        "comdlg32.lib",
+        "shell32.lib",
+        "sapnwrfc.lib",
+        "libsapucum.lib",
+    ];
+    pub const LINK_ARGS: [&str; 9] = [
+        "-NXCOMPAT",
+        "-STACK:0x800000",
+        "-SWAPRUN:NET",
+        "-Opt:REF",
+        "-DEBUGTYPE:CV",
+        "-LARGEADDRESSAWARE",
+        "-MACHINE:x86",
+        "-nologo",
+        "-LTCG",
+    ];
 }
 
 #[cfg(all(target_os = "windows", target_arch = "x86_64"))]
@@ -37,22 +68,59 @@ mod config {
         "-D_UNICODE",
         "-DSAPwithTHREADS",
         "-D_ATL_ALLOW_CHAR_UNSIGNED",
-        "-D_LARGEFILE_SOURCE",
-        "-D_CONSOLE",
-        "-DSAP_PLATFORM_MAKENAME=ntintel",
     ];
-    pub const LIBS: [&str; 2] = ["sapnwrfc", "libsapucum"];
+    pub const LIBS: [&str; 13] = [
+        "ole32.lib",
+        "oleauth32.lib",
+        "uuid.lib",
+        "kernel32.lib",
+        "advapi32.lib",
+        "user32.lib",
+        "gdi32.lib",
+        "winspool.lib",
+        "ws2_32.lib",
+        "comdlg32.lib",
+        "shell32.lib",
+        "sapnwrfc.lib",
+        "libsapucum.lib",
+    ];
     pub const LINK_ARGS: [&str; 9] = [
-        "/NXCOMPAT",
-        "/STACK:0x2000000",
-        "/SWAPRUN:NET",
-        "/DEBUG",
-        "/OPT:REF",
-        "/DEBUGTYPE:CV,FIXUP",
-        "/MACHINE:amd64",
-        "/nologo",
-        "/LTCG",
+        "-NXCOMPAT",
+        "-STACK:0x2000000",
+        "-SWAPRUN:NET",
+        "-DEBUG",
+        "-OPT:REF",
+        "-DEBUGTYPE:CV,FIXUP",
+        "-MACHINE:amd64",
+        "-nologo",
+        "-LTCG",
     ];
+}
+
+#[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+mod config {
+    pub const DEFINES: [&str; 1] = [
+        "-DSAPwithUNICODE",
+    ];
+    pub const LIBS: [&str; 2] = ["sapnwrfc", "sapucum"];
+    pub const LINK_ARGS: [&str; 0] = [];
+}
+
+#[cfg(all(target_os = "linux", target_arch = "x86"))]
+mod config {
+    pub const DEFINES: [&str; 2] = [
+        "-DSAPwithUNICODE",
+        "-m32",
+    ];
+    pub const LIBS: [&str; 2] = ["sapnwrfc", "sapucum"];
+    pub const LINK_ARGS: [&str; 0] = [];
+}
+
+#[cfg(all(target_os = "macos", target_arch = "x86_64"))]
+mod config {
+    pub const DEFINES: [&str; 1] = ["-DSAPwithUNICODE"];
+    pub const LIBS: [&str; 2] = ["sapnwrfc", "sapucum"];
+    pub const LINK_ARGS: [&str; 0] = [];
 }
 
 fn set_ld_library_path(lib_dir: PathBuf) {
